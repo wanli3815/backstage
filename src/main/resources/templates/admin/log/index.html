@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="/admin/common :: header" />
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <!--头部-->
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">操作人</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="username" placeholder="请输入操作人" value="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">业务类型</label>
+                    <div class="layui-input-block">
+                        <select name="businessType" >
+                            <option value="">所有</option>
+                            <option  value="0">新增</option>
+                            <option  value="1">修改</option>
+                            <option  value="2">删除</option>
+                            <option  value="3">授权</option>
+                            <option  value="4">列表</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">开始时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="start" class="layui-input app-laydate-item" placeholder="yyyy-MM-dd">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">结束时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="end" class="layui-input app-laydate-item" placeholder="yyyy-MM-dd">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-order" lay-submit lay-filter="app-admin-log-list-search">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                        搜素
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!--数据表-->
+        <div class="layui-card-body">
+
+            <table id="app-admin-log-list" lay-filter="app-admin-log-list"></table>
+
+            <script type="text/html" id="type_tpl">
+             {{# if(d.businessType==0)  { }}
+                新增
+             {{# } }}
+            {{# if(d.businessType==1)  { }}
+             修改
+            {{# } }}
+            {{# if(d.businessType==2)  { }}
+             删除
+            {{# } }}
+            {{# if(d.businessType==3)  { }}
+            授权
+            {{# } }}
+            {{# if(d.businessType==4)  { }}
+            列表
+            {{# } }}
+</script>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/admin/layui/layui.js}"></script>
+<script>
+    layui.config({
+        base: '/admin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'actionlog','laydate', 'table'], function(){
+        var $ = layui.$
+            ,form = layui.form
+            ,laydate = layui.laydate
+            ,table = layui.table;
+
+        //同时绑定多个日期
+        lay('.app-laydate-item').each(function(){
+            laydate.render({
+                elem: this
+                ,value: new Date()
+                ,trigger: 'click'
+            });
+        });
+
+        //监听搜索
+        form.on('submit(app-admin-log-list-search)', function(data){
+            var field = data.field;
+            console.info(data);
+            //执行重载
+            table.reload('app-admin-log-list', {
+                page:{
+                    curr:1
+                },
+                where: field
+            });
+        });
+    });
+</script>
+</body>
+</html>

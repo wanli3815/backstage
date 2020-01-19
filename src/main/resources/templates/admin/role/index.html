@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<th:block th:include="/admin/common :: header" />
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+
+        <div class="layui-card-body">
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layui-btn-normal layuiadmin-btn-role layui-btn-sm" data-type="add" shiro:hasPermission="system:role:add">添加</button>
+                <button class="layui-btn layui-btn-danger layuiadmin-btn-role layui-btn-sm" data-type="batchdel" shiro:hasPermission="system:role:del">删除</button>
+            </div>
+
+            <table id="app-admin-user-role" lay-filter="app-admin-user-role"></table>
+
+            <script type="text/html" id="table-admin-user-role">
+
+                <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="auth" shiro:hasPermission="system:role:auth"><i class="layui-icon layui-icon-auz"></i>授权</a>
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit" shiro:hasPermission="system:role:edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" shiro:hasPermission="system:role:del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+
+            </script>
+        </div>
+    </div>
+</div>
+
+<th:block th:include="/admin/common :: footer_js" />
+<script>
+    layui.config({
+        base: '/admin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'useradmin', 'table'], function(){
+        var $ = layui.$
+            ,form = layui.form
+            ,table = layui.table;
+
+        //事件
+        var active = {
+            batchdel: function(){
+                var checkStatus = table.checkStatus('app-admin-user-role')
+                    ,checkData = checkStatus.data; //得到选中的数据
+
+                if(checkData.length === 0){
+                    return layer.msg('请选择数据');
+                }
+
+                layer.confirm('确定删除吗？', function(index) {
+
+                    //执行 Ajax 后重载
+                    /*
+                    admin.req({
+                      url: 'xxx'
+                      //,……
+                    });
+                    */
+                    table.reload('app-admin-user-role');
+                    layer.msg('已删除');
+                });
+            },
+            add: function(){
+                layer.open({
+                    type: 2
+                    ,title: '添加新角色'
+                    ,content: 'add'
+                    ,area: ['80%','60%']
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        var iframeWindow = window['layui-layer-iframe'+ index]
+                            ,submit = layero.find('iframe').contents().find("#app-admin-user-role-submit");
+
+                        //监听提交
+                        iframeWindow.layui.form.on('submit(app-admin-user-role-submit)', function(data){
+                            var l = data.field; //获取提交的字段
+                            //提交 Ajax 成功后，静态更新表格中的数据
+                            var loadindex=layer.msg('处理中...', {
+                                icon: 16
+                                ,shade: 0.01,
+                                time:0
+                            });
+                            $.ajax({
+                                url:'add',
+                                method:'POST',
+                                data:l,
+                                success:function (res) {
+                                    layer.close(loadindex);
+                                    if (res.code == 1){
+                                        table.reload('app-admin-user-role'); //数据刷新
+                                    }
+                                    layer.msg(res.msg, {icon: res.code == 1 ? 1: 2,time: 1500});
+                                    layer.close(index); //关闭弹层
+                                }
+                            });
+                        });
+                        submit.trigger('click');
+                    }
+                });
+            }
+        };
+
+        $('.layui-btn.layuiadmin-btn-role').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>
+</body>
+</html>
+

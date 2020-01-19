@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<th:block th:include="/admin/common :: header_inside" />
+<body>
+
+<div class="layui-form" lay-filter="layuiadmin-form-admin" id="layuiadmin-form-admin" style="padding: 20px 30px 0 0;">
+    <input type="text" name="userId" th:value="${id}" hidden readonly>
+    <div class="layui-form-item">
+        <label class="layui-form-label">授权角色</label>
+        <div class="layui-input-block">
+            <th:block th:each="r:${role}">
+            <input type="checkbox" name="roleIds[]"  th:checked="${#lists.contains(userrole, r.id)}"  th:value="${r.id}"  th:title="${r.name}" lay-skin="primary">
+            </th:block>
+
+        </div>
+    </div>
+    <div class="layui-form-item layui-hide">
+        <input type="button" lay-submit lay-filter="app-admin-user-auth-submit" id="app-admin-user-auth-submit" value="确认">
+    </div>
+</div>
+
+<th:block th:include="/admin/common :: footer_js" />
+<script>
+    layui.config({
+        base: '/admin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'form'], function(){
+        var $ = layui.$
+            ,form = layui.form ;
+    })
+</script>
+</body>
+</html>

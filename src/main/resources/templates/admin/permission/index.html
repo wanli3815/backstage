@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<th:block th:include="/admin/common :: header" />
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+
+        <div class="layui-card-body">
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layui-btn-normal layuiadmin-btn-admin layui-btn-sm" data-type="add" shiro:hasPermission="system:permission:add">添加</button>
+                <button class="layui-btn layui-btn-danger layuiadmin-btn-admin layui-btn-sm" data-type="batchdel" shiro:hasPermission="system:permission:del">删除</button>
+            </div>
+
+            <table id="app-admin-menu-list" lay-filter="app-admin-menu-list"></table>
+            <script type="text/html" id="statusTpl">
+                {{#  if(d.status == 1){ }}
+                <button class="layui-btn layui-btn-xs">正常</button>
+                {{#  } else { }}
+                <button class="layui-btn layui-btn-danger layui-btn-xs">禁用</button>
+                {{#  } }}
+            </script>
+
+            <script type="text/html" id="typeTpl">
+                {{#  if(d.type == 1){ }}
+                <button class="layui-btn layui-btn-xs">目录</button>
+                {{#  } if(d.type == 2){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-xs">菜单</button>
+                {{#  } if(d.type == 3){ }}
+                <button class="layui-btn  layui-btn-xs layui-btn-warm">按钮</button>
+                {{#  } }}
+            </script>
+            <script type="text/html" id="table-menu-list">
+                {{#  if(d.type != 3){ }}
+                <a class="layui-btn layui-btn-xs" lay-event="add" shiro:hasPermission="system:permission:add"><i class="layui-icon layui-icon-add-1">添加</i></a>
+                {{#  } }}
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit" shiro:hasPermission="system:permission:edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" shiro:hasPermission="system:permission:del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+            </script>
+        </div>
+    </div>
+</div>
+
+<th:block th:include="/admin/common :: footer_js" />
+<script>
+    layui.config({
+        base: '/admin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index','menu','table'], function(){
+        var $ = layui.$
+            ,form = layui.form
+            ,table = layui.table;
+
+        //监听搜索
+        form.on('submit(app-admin-menu-search)', function(data){
+            var field = data.field;
+
+            //执行重载
+            table.reload('app-admin-menu-list', {
+                where: field
+            });
+        });
+
+
+        //事件
+        var active = {
+            batchdel: function(){
+                var checkStatus = table.checkStatus('app-admin-menu-list')
+                    ,checkData = checkStatus.data; //得到选中的数据
+
+                if(checkData.length === 0){
+                    return layer.msg('请选择数据');
+                }
+
+                layer.prompt({
+                    formType: 1
+                    ,title: '敏感操作，请验证口令'
+                }, function(value, index){
+                    layer.close(index);
+
+                    layer.confirm('确定删除吗？', function(index) {
+
+                        //执行 Ajax 后重载
+                        /*
+                        admin.req({
+                          url: 'xxx'
+                          //,……
+                        });
+                        */
+                        table.reload('app-admin-menu-list');
+                        layer.msg('已删除');
+                    });
+                });
+            }
+            ,add: function(){
+                layer.open({
+                    type: 2
+                    ,title: '添加菜单'
+                    ,content: 'add/0'
+                    ,area: ['80%','60%']
+                    ,btn: ['确定', '取消']
+                    ,yes: function(f, n){
+                        var l = window['layui-layer-iframe'+ f]
+                            ,r = 'app-admin-menu-submit'
+                            ,submit = n.find('iframe').contents().find('#'+ r);
+
+                        //监听提交
+                        l.layui.form.on('submit('+ r +')',
+                            function(t){
+                                var l = t.field; //获取提交的字段
+                                //提交 Ajax 成功后，静态更新表格中的数据
+                                console.info(l);
+
+                                $.ajax({
+                                    url:'add',
+                                    method:'POST',
+                                    data:l,
+                                    success:function (res) {
+                                        if (res.code == 1){
+                                            table.reload('app-admin-menu-list'); //数据刷新
+                                            layer.close(f); //关闭弹层
+                                        }
+                                        layer.msg(res.msg, {icon: res.code == 1 ? 1: 2,time: 1500});
+
+                                    }
+                                });
+                            });
+
+                        submit.trigger('click');
+                    }
+                });
+            }
+        }
+        $('.layui-btn.layuiadmin-btn-admin').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>
+</body>
+</html>
+

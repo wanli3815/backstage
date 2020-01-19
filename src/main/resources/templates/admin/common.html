@@ -1,0 +1,24 @@
+<!-- 通用header -->
+<head th:fragment=header>
+    <meta charset="utf-8">
+    <title>后台管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" th:href="@{/admin/layui/css/layui.css}" media="all"/>
+    <link rel="stylesheet" th:href="@{/admin/style/admin.css}"  media="all"/>
+</head>
+
+<!--除了列表页之外的其他页面需要的样式-->
+<head th:fragment=header_inside>
+    <meta charset="utf-8">
+    <title>后台管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" th:href="@{/admin/layui/css/layui.css}" media="all"/>
+</head>
+
+<block th:fragment=footer_js>
+    <script th:src="@{/admin/layui/layui.js}"></script>
+</block>

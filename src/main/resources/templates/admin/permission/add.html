@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<th:block th:include="/admin/common :: header_inside" />
+<style type="text/css">
+    .showtwo{
+        display: none;
+    }
+    .showthree{
+        display: none;
+    }
+    .showfour{
+        display: none;
+    }
+</style>
+<body>
+<div class="layui-form" lay-filter="layuiadmin-form-admin" id="layuiadmin-form-admin" style="padding: 20px 30px 0 0;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">上级菜单</label>
+        <div class="layui-input-block">
+            <select name="pid">
+                <option value="0" th:selected="${pid eq 0}" >顶级菜单</option>
+                <th:block th:each="c : ${category}">
+                    <option  th:value="${c.id}" th:text="${c.name}" th:selected="${pid eq c.id}"></option>
+                    <th:block th:each="d : ${c.subcategory}">
+                        <option  th:value="${d.id}" th:text="${'   |-----'+d.name}" th:selected="${pid eq d.id}"></option>
+                    </th:block>
+                </th:block>
+
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label">栏目类型：</label>
+        <div class="layui-input-block" >
+            <input type="radio"  name="type" value="1" title="目录"  lay-filter="typeredio">
+            <input type="radio"  name="type" value="2" title="菜单" lay-filter="typeredio">
+            <input type="radio"  name="type" value="3" title="按钮" lay-filter="typeredio">
+        </div>
+    </div>
+    <div class="layui-form-item ">
+        <label class="layui-form-label">名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" value="" lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item showtwo">
+        <label class="layui-form-label">图标</label>
+        <div class="layui-input-block">
+            <input type="text" name="code" value="" placeholder="请输入图标" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item showtwo">
+        <label class="layui-form-label">菜单Url</label>
+        <div class="layui-input-block">
+            <input type="text" name="url" value=""  placeholder="请输入菜单Url" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item showtwo">
+        <label class="layui-form-label">菜单排序</label>
+        <div class="layui-input-block">
+            <input type="number" name="orderNum" value=""  placeholder="请输入菜单排序" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item showfour">
+        <label class="layui-form-label">授权</label>
+        <div class="layui-input-block">
+            <input type="text" name="perms" value=""  placeholder="sys:role:add" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">是否启用：</label>
+        <div class="layui-input-block">
+            <input type="radio" name="status" value="1" title="是" checked>
+            <input type="radio" name="status" value="0" title="否">
+        </div>
+    </div>
+    <div class="layui-form-item layui-hide">
+        <input type="button" lay-submit lay-filter="app-admin-menu-submit" id="app-admin-menu-submit" value="确认">
+    </div>
+</div>
+
+<th:block th:include="/admin/common :: footer_js" />
+<script>
+    layui.config({
+        base: '/admin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index','treeSelect', 'form'], function(){
+        var $ = layui.$,
+            treeSelect= layui.treeSelect
+            ,form = layui.form;
+        form.on('radio(typeredio)', function(data){
+            var v=data.value;
+            $(".showtwo").hide();
+            $(".showfour").hide();
+            if(v==2){
+                $(".showtwo").show();
+            }
+            if(v==3){
+                $(".showtwo").hide();
+                $(".showfour").show();
+            }
+
+        });
+    });
+
+</script>
+</body>
+</html>

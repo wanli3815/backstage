@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<th:block th:include="/admin/common :: header_inside" />
+<body>
+
+<div class="layui-form" lay-filter="layuiadmin-form-role" id="layuiadmin-form-role" style="padding: 20px 30px 0 0;">
+    <input type="hidden" th:value="${id}" id="id">
+    <div class="layui-card-body layui-row layui-col-space10">
+        <input name="id" value="2" hidden readonly>
+        <div class="layui-form-item">
+            <label class="layui-form-label">选择权限</label>
+            <div class="layui-input-block">
+                <div id="app-auth-tree-list"></div>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit lay-filter="app-admin-user-role-submit" id="app-admin-user-role-submit" value="确认">
+        </div>
+    </div>
+</div>
+
+<th:block th:include="/admin/common :: footer_js" />
+<script th:inline="none">
+    layui.config({
+        base: '/admin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index','authtree', 'form'], function(){
+        var $ = layui.$
+            ,form = layui.form
+            ,authtree = layui.authtree;
+
+        // 初始化数据
+        $.ajax({
+            url: '../getauth/'+$("#id").val(),
+            method:'POST',
+            success: function(res) {
+
+                var checkedKey = [];
+                for (var i = 0; i <= res.data.checked.length; i++) {
+                    checkedKey.push(res.data.checked[i]);
+                }
+                var trees = authtree.listConvert(res.data.list, {
+                    primaryKey: 'id'
+                    ,startPid: '0'
+                    ,parentKey: 'pid'
+                    ,nameKey: 'name'
+                    ,valueKey: 'id'
+                    ,checkedKey: checkedKey
+                });
+
+                // 渲染时传入渲染目标ID，树形结构数据（具体结构看样例，checked表示默认选中），以及input表单的名字
+                authtree.render('#app-auth-tree-list', trees, {
+                    inputname: 'rules[]'
+                    , layfilter: 'lay-check-auth'
+                    , openall: true
+                    , autowidth: true
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>
