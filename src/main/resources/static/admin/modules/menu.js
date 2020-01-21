@@ -8,6 +8,7 @@ layui.define(["treeGrid","table", "form"],
             id:'app-admin-menu-list'
             ,elem: '#app-admin-menu-list'
             ,url: 'getList',
+
             response: {
                 statusCode: 1 //数据状态一切正常的状态码
             }
@@ -73,7 +74,11 @@ layui.define(["treeGrid","table", "form"],
                                 time:0
                             });
                             t.ajax({
-                                url: 'del/'+ e.data.id,
+                                url: 'del',
+                                data:{
+                                    id:e.data.id,
+                                    obj:e.data
+                                },
                                 method:'DELETE',
                                 success:function (res) {
                                     layer.close(index);

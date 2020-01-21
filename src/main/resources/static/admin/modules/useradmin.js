@@ -67,13 +67,20 @@ layui.define(["table", "form","authtree"],
                     },
                     function(d, i) {
                         layer.close(i),
+
                             layer.confirm("确定删除此管理员？",
                                 function(d) {
-                                    console.log(e),
+
+
                                         t.ajax({
-                                            url: 'del/'+ e.data.id,
+                                            url: 'del',
+                                            data:{
+                                                id:e.data.id,
+                                                obj:e.data
+                                            },
                                             method:'DELETE',
                                             success:function (res) {
+
                                                 if (res.code == 1){
                                                     e.del()
                                                 }
@@ -161,6 +168,7 @@ layui.define(["table", "form","authtree"],
             response: {
                 statusCode: 1 //数据状态一切正常的状态码
             },
+            loading:true,
             cols: [
                 [ {
                     field: "id",
@@ -201,7 +209,11 @@ layui.define(["table", "form","authtree"],
                 if ("del" === e.event) layer.confirm("确定删除此角色？",
                     function(d) {
                         t.ajax({
-                            url: 'del/'+ e.data.id,
+                            url: 'del',
+                            data:{
+                                id:e.data.id,
+                                obj:e.data
+                            },
                             method:'Delete',
                             success:function (res) {
                                 layer.close(loadindex);

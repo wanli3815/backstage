@@ -11,6 +11,7 @@ layui.define(["table", "form", "element"],
             response: {
                 statusCode: 1 //数据状态一切正常的状态码
             },
+            loading:true,
             cols: [[
 
                 {
@@ -36,12 +37,6 @@ layui.define(["table", "form", "element"],
                     field: "url",
                     align: "center",
                     title: "操作网址"
-                },
-                {
-                    field: "method",
-                    align: "center",
-                    width: 350,
-                    title: "操作方法"
                 },
                 {
                     field: "params",

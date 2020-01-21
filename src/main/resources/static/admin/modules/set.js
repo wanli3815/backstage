@@ -37,7 +37,7 @@ layui.define(["form", "upload"], function(t) {
         });
     }),n.on("submit(setmypass)", function(t) {
         //修改管理密码
-        i.post("changePwd",t.field,function (res) {
+        i.post("changepwd",t.field,function (res) {
             return e.msg(res.msg, {icon: res.code == 1 ? 1: 2,time: 1500},function () {
                 window.location.reload()
             })

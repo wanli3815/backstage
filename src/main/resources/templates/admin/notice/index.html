@@ -42,8 +42,8 @@
 
         <div class="layui-card-body">
             <div class="app-article-list" style="padding-bottom: 10px;">
-                <button class="layui-btn layuiadmin-button-btn layui-btn-normal layui-btn-sm" data-type="add">添加</button>
-                <button class="layui-btn layuiadmin-button-btn layui-btn-danger layui-btn-sm" data-type="batchdel">删除</button>
+                <button class="layui-btn layuiadmin-button-btn layui-btn-normal layui-btn-sm" data-type="add" shiro:hasPermission="news:notice:add">添加</button>
+                <button class="layui-btn layuiadmin-button-btn layui-btn-danger layui-btn-sm" data-type="batchdel" shiro:hasPermission="news:notice:del">删除</button>
             </div>
             <table id="app-article-list" lay-filter="app-article-list"></table>
             <script type="text/html" id="buttonTpl">
@@ -54,8 +54,8 @@
                 {{#  } }}
             </script>
             <script type="text/html" id="table-content-list">
-                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
-                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit" shiro:hasPermission="news:notice:edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" shiro:hasPermission="news:notice:del"><i class="layui-icon layui-icon-delete"></i>删除</a>
             </script>
         </div>
     </div>

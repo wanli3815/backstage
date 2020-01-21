@@ -14,6 +14,7 @@ layui.define(["table", "form"],
                 ,msgName: 'msg' //状态信息的字段名称
                 ,dataName: 'data' //数据详情的字段名称
             },
+            loading:true,
             cols: [[{
                 type: "checkbox",
                 fixed: "left"
@@ -68,8 +69,12 @@ layui.define(["table", "form"],
                 "del" === t.event ? layer.confirm("确定删除此文章？",
                     function(d) {
                         q.ajax({
-                            url: 'del/'+ e.id,
-                            method:'Delete',
+                            url: 'del',
+                            data:{
+                                id:e.id,
+                                obj:e
+                            },
+                            method:'DELETE',
                             success:function (res) {
                                 if (res.code == 1){
                                     t.del()

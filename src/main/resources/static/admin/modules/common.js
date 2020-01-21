@@ -3,12 +3,12 @@ layui.define(function(e) {
     var i = (layui.$, layui.layer, layui.laytpl, layui.setter, layui.view, layui.admin);
     i.events.logout = function() {
         i.req({
-            url: "/admin/login/logout",
-            type: "get",
+            url: "/admin/user/logout",
+            type: "POST",
             data: {},
             done: function(e) {
                 i.exit(function() {
-                    location.href = "admin/login"
+                    location.href = "/admin/login"
                 })
             }
         })
