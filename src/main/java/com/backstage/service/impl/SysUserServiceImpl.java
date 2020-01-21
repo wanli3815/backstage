@@ -3,6 +3,7 @@ package com.backstage.service.impl;
 import com.backstage.dao.SysUserMapper;
 import com.backstage.entity.SysUser;
 import com.backstage.exception.login.UserNotExistsException;
+import com.backstage.service.SysUserRoleService;
 import com.backstage.service.SysUserService;
 import com.backstage.unils.IdWorker;
 import com.backstage.unils.PasswordUtils;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;;
 import java.util.Date;
 import java.util.List;
@@ -24,11 +26,13 @@ import java.util.List;
  * @author: wanli3815@163.com
  * @create: 2020-01-13 17:20
  **/
-@Slf4j
 @Service
 public class SysUserServiceImpl implements SysUserService {
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private SysUserRoleService sysUserRoleService;
     @Override
     public SysUser login(String UserName, String PassWord) {
         SysUser user=new SysUser();
@@ -119,13 +123,16 @@ public class SysUserServiceImpl implements SysUserService {
         return i;
     }
 
+    @Transactional
     @Override
     public boolean delUser(String id) {
         SysUser newuser=new SysUser();
         newuser.setId(id);
+
         boolean exists = sysUserMapper.existsWithPrimaryKey(newuser);
         if(exists){
             int delete = sysUserMapper.delete(newuser);
+            sysUserRoleService.delRoleByUser(id);
             return delete>0?true:false;
         }
         return false;

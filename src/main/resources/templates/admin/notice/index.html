@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<th:block th:include="/admin/common :: header" />
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">文章作者</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="author" placeholder="请输入作者" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">文章标题</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="title" placeholder="请输入标题" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">开始时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="start" class="layui-input app-laydate-item" placeholder="yyyy-MM-dd">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">结束时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="end" class="layui-input app-laydate-item" placeholder="yyyy-MM-dd">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-list" lay-submit lay-filter="app-article-list-search">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <div class="app-article-list" style="padding-bottom: 10px;">
+                <button class="layui-btn layuiadmin-button-btn layui-btn-normal layui-btn-sm" data-type="add">添加</button>
+                <button class="layui-btn layuiadmin-button-btn layui-btn-danger layui-btn-sm" data-type="batchdel">删除</button>
+            </div>
+            <table id="app-article-list" lay-filter="app-article-list"></table>
+            <script type="text/html" id="buttonTpl">
+                {{#  if(d.status == '1'){ }}
+                <button class="layui-btn layui-btn-xs">已发布</button>
+                {{#  } else { }}
+                <button class="layui-btn layui-btn-warm layui-btn-xs">等待中</button>
+                {{#  } }}
+            </script>
+            <script type="text/html" id="table-content-list">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+            </script>
+        </div>
+    </div>
+</div>
+
+<th:block th:include="/admin/common :: footer_js" />
+<script>
+    layui.config({
+        base: '/admin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'article','laydate', 'table'], function(){
+        var table = layui.table
+            ,laydate = layui.laydate
+            ,form = layui.form;
+
+        //同时绑定多个日期
+        lay('.app-laydate-item').each(function(){
+            laydate.render({
+                elem: this
+                ,value: new Date()
+                ,trigger: 'click'
+            });
+        });
+        //监听搜索
+        form.on('submit(app-article-list-search)', function(data){
+            var field = data.field;
+
+            //执行重载
+            table.reload('app-article-list', {
+                page:{
+                    curr:1
+                },
+                where: field
+            });
+        });
+
+        var $ = layui.$,
+            active = {
+                batchdel: function(){
+                    var checkStatus = table.checkStatus('app-article-list')
+                        ,checkData = checkStatus.data, //得到选中的数据
+                        newsid=[];
+
+                    if(checkData.length === 0){
+                        return layer.msg('请选择数据');
+                    }
+
+                    layer.confirm('确定删除吗？', function(index) {
+                        var loadindex=layer.msg('处理中...', {
+                            icon: 16
+                            ,shade: 0.01,
+                            time:0
+                        });
+                        for (var i = 0; i <checkData.length ; i++) {
+                            newsid.push(checkData[i].id);
+                        }
+                        console.info(newsid);
+                        //执行 Ajax 后重载
+
+                        $.ajax({
+                            url: 'del/'+ newsid,
+                            method:'Delete',
+                            success:function (res) {
+                                layer.close(index);
+                                if (res.code == 1){
+                                    table.reload('app-article-list');
+                                }
+                                layer.msg(res.msg, {icon: res.code == 1 ? 1: 2,time: 1500});
+
+                            }
+                        });
+
+
+
+
+                    });
+                },
+                add: function(){
+                    layer.open({
+                        type: 2
+                        ,title: '添加文章'
+                        ,content: 'add'
+                        ,maxmin: true
+                        ,area: ['80%','60%']
+                        ,btn: ['确定', '取消']
+                        ,yes: function(index, layero){
+                            //点击确认触发 iframe 内容中的按钮提交
+                            var submit = layero.find('iframe').contents().find("#app-article-form-submit");
+                            submit.click();
+                        }
+                    });
+                }
+            };
+
+        $('.layui-btn.layuiadmin-button-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<th:block th:include="/admin/common :: header_inside" />
+<body>
+<div class="layui-form" lay-filter="app-article-form-list" id="app-article-form-list" style="padding: 20px 30px 0 0;">
+    <input type="hidden" name="picture" value="" id="picture" >
+    <div class="layui-form-item">
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-block">
+            <input type="text" name="title" lay-verify="required" value="" placeholder="请输入文章标题" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">封面图</label>
+        <div class="layui-input-block">
+            <div class="layui-upload-drag" id="test10">
+                <i class="layui-icon">&#xe67c;</i>
+                <p>点击上传，或将文件拖拽到此处</p>
+                <div class="layui-hide" id="uploadDemoView">
+                    <hr>
+                    <img src="" alt="上传成功后渲染" style="max-width: 196px">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">发布人</label>
+        <div class="layui-input-inline">
+            <input type="text" name="author" lay-verify="required" value="" placeholder="请输入发布人" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+<!--    <div class="layui-form-item">-->
+<!--        <label class="layui-form-label">文章描述</label>-->
+<!--        <div class="layui-input-block">-->
+<!--            <input type="text" name="describe" lay-verify="required" value="" placeholder="请输入文章描述" autocomplete="off" class="layui-input">-->
+<!--        </div>-->
+<!--    </div>-->
+    <div class="layui-form-item">
+        <label class="layui-form-label">文章内容</label>
+        <div class="layui-input-block">
+            <textarea name="content" id="content_editor" style="width: 400px; height: 150px;" autocomplete="off" class="layui-textarea"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">发布状态</label>
+        <div class="layui-input-inline">
+            <input type="checkbox"  lay-filter="status" name="status" value="1" lay-skin="switch" lay-text="发布|等待中">
+        </div>
+    </div>
+    <div class="layui-form-item layui-hide">
+        <input type="button" lay-submit lay-filter="app-article-form-submit" id="app-article-form-submit" value="确认添加">
+
+    </div>
+</div>
+
+<th:block th:include="/admin/common :: footer_js" />
+<script>
+    layui.config({
+        base: '/admin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'form','layedit','upload'], function(){
+        var $ = layui.$,
+            layedit = layui.layedit,
+            form = layui.form,
+            upload = layui.upload;
+        //拖拽上传
+        upload.render({
+            elem: '#test10'
+            ,url: '/common/upload' //改成您自己的上传接口
+            ,done: function(res){
+                layer.msg('上传成功');
+                layui.$('#uploadDemoView').removeClass('layui-hide').find('img').attr('src', res.data.src);
+                $("#picture").val(res.data.src);
+                console.log(res)
+            }
+        });
+        //处理上传接口
+        layedit.set({
+            uploadImage: {
+                url: '/common/upload'//接口url
+                ,type: 'post' //默认post//自定义响应字段
+            }
+        });
+        //创建一个编辑器
+        var contents=layedit.build('content_editor', {
+            tool: [
+
+                'strong' //加粗
+                , 'italic' //斜体
+                , 'underline' //下划线
+                , 'del' //删除线
+                , '|' //分割线
+                , 'left' //左对齐
+                , 'center' //居中对齐
+                , 'right' //右对齐
+                , 'link' //超链接
+                , 'unlink' //清除链接
+                , 'face' //插入表情
+                , 'image' //插入图片
+            ],
+            height: 300
+        });
+        //监听提交
+        form.on('submit(app-article-form-submit)', function(data){
+            var field = data.field; //获取提交的字段
+            field.content=layedit.getContent(contents);
+            console.info(field);
+
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            //提交 Ajax 成功后，关闭当前弹层并重载表格
+            //这里是提交
+            var loadindex=layer.msg('处理中...', {
+                icon: 16
+                ,shade: 0.01,
+                time:0
+            });
+            $.post("add",field,function (res) {
+                layer.close(loadindex);
+                if (res.code == 1){
+                    parent.layui.table.reload('app-article-list'); //重载表格
+                    parent.layer.close(index); //再执行关闭
+                }else {
+                    layer.msg(res.msg);
+                }
+            })
+        });
+    })
+</script>
+</body>
+</html>

@@ -20,6 +20,15 @@ public class TableDataInfo implements Serializable
     /** 消息状态码 */
     private int code;
 
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    private String msg;
     /**
      * 表格数据对象
      */
@@ -38,6 +47,8 @@ public class TableDataInfo implements Serializable
         this.code= ResultEnum.SUCCESS.getCode();
         this.data = list;
         this.count = total;
+
+
     }
 
     public long getCount()

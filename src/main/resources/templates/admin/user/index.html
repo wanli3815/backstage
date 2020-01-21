@@ -40,7 +40,7 @@
         <div class="layui-card-body">
             <div style="padding-bottom: 10px;">
                 <button class="layui-btn layui-btn-normal layuiadmin-btn-admin layui-btn-sm" data-type="add" shiro:hasPermission="system:user:add">添加</button>
-                <button class="layui-btn layui-btn-danger layuiadmin-btn-admin layui-btn-sm" data-type="batchdel" shiro:hasPermission="system:user:del">删除</button>
+
             </div>
 
             <table id="app-admin-user-manage" lay-filter="app-admin-user-manage"></table>
@@ -59,7 +59,7 @@
                 {{#  } }}
             </script>
             <script type="text/html" id="table-useradmin-admin">
-                {{#  if(d.id == 1){ }}
+                {{#  if(d.id == 'fcf34b56-a7a2-4719-9236-867495e74c31'){ }}
                 <a class="layui-btn layui-btn-disabled layui-btn-xs" shiro:hasPermission="system:user:auth"><i class="layui-icon layui-icon-auz"></i>授权</a>
                 <a class="layui-btn layui-btn-disabled layui-btn-xs" shiro:hasPermission="system:user:edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
                 <a class="layui-btn layui-btn-disabled layui-btn-xs" shiro:hasPermission="system:user:del"><i class="layui-icon layui-icon-delete"></i>删除</a>

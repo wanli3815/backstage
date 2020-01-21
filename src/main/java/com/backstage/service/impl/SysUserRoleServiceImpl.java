@@ -77,6 +77,22 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
         return i;
     }
 
-    //获取登陆后的用户id 并根据用户id找出对应的角色id，根据角色id获取权限列表
+    @Override
+    public void delRoleByUser(String userId) {
+        Example example=new Example(SysUserRole.class);
+        Example.Criteria criteria= example.createCriteria();
+        criteria.andEqualTo("userId",userId);
+        sysUserRoleMapper.deleteByExample(example);
+    }
+
+    @Override
+    public boolean isUserCountByRole(String roleId) {
+        Example example=new Example(SysUserRole.class);
+        Example.Criteria criteria= example.createCriteria();
+        criteria.andEqualTo("roleId",roleId);
+        int i = sysUserRoleMapper.selectCountByExample(example);
+        return i>0?true:false;
+    }
+
 
 }

@@ -1,7 +1,10 @@
 package com.backstage.service.impl;
 
 import com.backstage.dao.SysRoleMapper;
+import com.backstage.dao.SysRolePermissionMapper;
 import com.backstage.entity.SysRole;
+import com.backstage.entity.SysRolePermission;
+import com.backstage.service.SysRolePermissionService;
 import com.backstage.service.SysRoleService;
 import com.backstage.unils.IdWorker;
 import com.backstage.unils.text.Convert;
@@ -10,6 +13,7 @@ import com.backstage.vo.role.RoleEdit;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
@@ -25,6 +29,9 @@ import java.util.List;
 public class SysRoleServiceImpl implements SysRoleService {
     @Autowired
     private SysRoleMapper sysRoleMapper;
+    @Autowired
+    private SysRolePermissionMapper sysRolePermissionMapper;
+
     @Override
     public List<SysRole> findAll() {
         List<SysRole> sysRoles = sysRoleMapper.selectAll();
@@ -33,8 +40,8 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public int insert(RoleAdd role) {
-        SysRole sysRole=new SysRole();
-        BeanUtils.copyProperties(role,sysRole);
+        SysRole sysRole = new SysRole();
+        BeanUtils.copyProperties(role, sysRole);
         sysRole.setId(Convert.toStr(new IdWorker().nextId()));
         sysRole.setCreateTime(new Date());
         sysRole.setUpdateTime(new Date());
@@ -44,8 +51,8 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public int update(RoleEdit role) {
-        SysRole sysRole=new SysRole();
-        BeanUtils.copyProperties(role,sysRole);
+        SysRole sysRole = new SysRole();
+        BeanUtils.copyProperties(role, sysRole);
         sysRole.setUpdateTime(new Date());
         int i = sysRoleMapper.updateByPrimaryKeySelective(sysRole);
         return i;
@@ -53,23 +60,35 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public SysRole getRole(String id) {
-        Example example=new Example(SysRole.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andEqualTo("id",id);
+        Example example = new Example(SysRole.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("id", id);
         SysRole sysRole = sysRoleMapper.selectOneByExample(example);
         return sysRole;
     }
 
     @Override
     public List<String> getRoleName(List<String> roleId) {
-        Example example=new Example(SysRole.class);
-        Example.Criteria criteria=example.createCriteria();
-        criteria.andIn("id",roleId);
+        Example example = new Example(SysRole.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andIn("id", roleId);
         List<SysRole> sysRoles = sysRoleMapper.selectByExample(example);
-        List<String> all=new ArrayList<>();
+        List<String> all = new ArrayList<>();
         for (SysRole role : sysRoles) {
             all.add(role.getName());
         }
         return all;
+    }
+
+    @Transactional
+    @Override
+    public void delRole(String roleId) {
+        Example example = new Example(SysRolePermission.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("roleId", roleId);
+        sysRolePermissionMapper.deleteByExample(example);
+        SysRole sysRole = new SysRole();
+        sysRole.setId(roleId);
+        sysRoleMapper.delete(sysRole);
     }
 }

@@ -22,3 +22,15 @@
 <block th:fragment=footer_js>
     <script th:src="@{/admin/layui/layui.js}"></script>
 </block>
+
+<!----百度编辑器插件------>
+<div th:fragment="ueditor-css">
+    <link th:href="@{/ueditor/themes/default/css/ueditor.css}" rel="stylesheet"/>
+</div>
+
+
+<div th:fragment="ueditor-js">
+    <script th:src="@{/ueditor/ueditor.config.js}"></script>
+    <script th:src="@{/ueditor/ueditor.all.js}"></script>
+    <script th:src="@{/ueditor/lang/zh-cn/zh-cn.js}"></script>
+</div>

@@ -21,4 +21,6 @@ public interface SysRolePermissionService {
      * @return
      */
     List<String> getRoleByMenuPermission(List<String>roleId);
+
+    boolean isFindPer(String perId);
 }

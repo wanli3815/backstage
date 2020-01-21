@@ -67,7 +67,7 @@ role: 拥有某个角色权限才能访问
         map.put("/logout", "logout");
         map.put("/admin/login", "anon");
         //对所有用户认证
-        //map.put("/**", "authc");
+        map.put("/**", "anon");
 
         //登录
         shiroFilterFactoryBean.setLoginUrl("/admin/login");

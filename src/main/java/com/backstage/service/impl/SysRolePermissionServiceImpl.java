@@ -74,4 +74,12 @@ public class SysRolePermissionServiceImpl implements SysRolePermissionService {
         }
         return all;
     }
+    @Override
+    public boolean isFindPer(String perId){
+        Example example=new Example(SysRolePermission.class);
+        Example.Criteria criteria=example.createCriteria();
+        criteria.andEqualTo("permissionId",perId);
+        int i = sysRolePermissionMapper.selectCountByExample(example);
+        return i>0?true:false;
+    }
 }

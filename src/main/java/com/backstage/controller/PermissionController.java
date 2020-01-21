@@ -4,6 +4,7 @@ import com.backstage.aspectj.annotation.Log;
 import com.backstage.aspectj.enums.BusinessType;
 import com.backstage.entity.SysPermission;
 import com.backstage.service.SysPermissionService;
+import com.backstage.service.SysRolePermissionService;
 import com.backstage.unils.AjaxResult;
 import com.backstage.unils.StringUtils;
 import com.backstage.vo.permission.Category;
@@ -33,6 +34,9 @@ public class PermissionController extends BaseController {
 
     @Autowired
     private SysPermissionService sysPermissionService;
+
+    @Autowired
+    private SysRolePermissionService sysRolePermissionService;
 
     @GetMapping("/index")
     public String index(){
@@ -158,6 +162,10 @@ public class PermissionController extends BaseController {
         boolean isfindsub=sysPermissionService.isFindSub(id);
         if(isfindsub){
             return AjaxResult.error("请先删除其下方的菜单");
+        }
+        boolean findPer = sysRolePermissionService.isFindPer(id);
+        if(findPer){
+            return AjaxResult.error("请先删除角色里的引用权限");
         }
         int i=sysPermissionService.delete(id);
         if(i>0){

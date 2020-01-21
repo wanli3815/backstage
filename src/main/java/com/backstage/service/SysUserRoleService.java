@@ -15,4 +15,9 @@ public interface SysUserRoleService {
 
     int insert(UserRoleEdit userRoleEdit);
 
+    void delRoleByUser(String userId);
+
+    //根据角色查找用户数量 如果用户数量不等于零。提示先删除用户 在删除用户角色
+    boolean isUserCountByRole(String roleId);
+
 }

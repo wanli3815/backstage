@@ -23,13 +23,9 @@ layui.define(["treeGrid","table", "form"],
             ,iconOpen:false//是否显示图标【默认显示】
             ,isOpenDefault:true//节点默认是展开还是折叠【默认展开】
             ,loading:true
-            ,cols: [[{
-                    type:'checkbox',
-                    sort:true
-                }
-                , {
+            ,cols: [[ {
                     field: 'name',
-                    width: 300,
+                    width: 150,
                     title: '菜单名称',
                     edit: 'text',
                     sort: true
@@ -41,14 +37,16 @@ layui.define(["treeGrid","table", "form"],
                 },{
                     field:'type',
                     title:'类型',
+                    width:100,
                     templet: "#typeTpl",
                 }
                 ,{
                     field:'url',
+                    width:200,
                     title: '链接'
                 },{
                     field:'status',
-                    title:'类型',
+                    title:'状态',
                     templet: "#statusTpl",
                 }
                 ,{
@@ -69,15 +67,22 @@ layui.define(["treeGrid","table", "form"],
                     var d = e.data;
                     if ("del" === e.event) layer.confirm("确定删除此菜单？",
                         function(d) {
+                            var loadindex=layer.msg('处理中...', {
+                                icon: 16
+                                ,shade: 0.01,
+                                time:0
+                            });
                             t.ajax({
                                 url: 'del/'+ e.data.id,
                                 method:'DELETE',
                                 success:function (res) {
+                                    layer.close(index);
                                     if (res.code == 1){
-                                        e.del()
+                                        layer.close(d); //关闭弹层
+                                        e.del();
                                     }
                                     layer.msg(res.msg, {icon: res.code == 1 ? 1: 2,time: 1500});
-                                    layer.close(d); //关闭弹层
+
                                 }
                             });
                         });

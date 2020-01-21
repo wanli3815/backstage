@@ -21,4 +21,6 @@ public interface SysRoleService {
     SysRole getRole(String id);
 
     List<String> getRoleName(List<String> roleId);
+
+    void delRole(String roleId);
 }

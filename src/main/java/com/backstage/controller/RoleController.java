@@ -7,6 +7,7 @@ import com.backstage.entity.SysRole;
 import com.backstage.service.SysPermissionService;
 import com.backstage.service.SysRolePermissionService;
 import com.backstage.service.SysRoleService;
+import com.backstage.service.SysUserRoleService;
 import com.backstage.unils.AjaxResult;
 import com.backstage.unils.StringUtils;
 import com.backstage.unils.page.TableDataInfo;
@@ -45,6 +46,8 @@ public class RoleController  extends  BaseController{
     private SysPermissionService sysPermissionService;
     @Autowired
     private SysRolePermissionService sysRolePermissionService;
+    @Autowired
+    private SysUserRoleService sysUserRoleService;
 
     @GetMapping("/index")
     public String index(){
@@ -134,5 +137,19 @@ public class RoleController  extends  BaseController{
 
         sysRolePermissionService.insert(id,menu);
         return AjaxResult.success("操作成功");
+    }
+
+    @Log(title = "角色管理",busionesstype = BusinessType.DELETE)
+    @RequiresPermissions("system:role:del")
+    @DeleteMapping("del/{id}")
+    @ResponseBody
+    public AjaxResult del(@PathVariable("id") String roleId){
+        boolean countByUser = sysUserRoleService.isUserCountByRole(roleId);
+        if(countByUser){
+            return AjaxResult.error("请先删除该角色下的用户");
+        }
+        sysRoleService.delRole(roleId);
+
+        return AjaxResult.success("删除成功");
     }
 }

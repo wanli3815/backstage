@@ -32,3 +32,6 @@ spring:
 #    name: log.log
 #  level:
 #    com.backstage: error
+backstage:
+  #上传图片绝对路径 D:/wwwroot/
+  uploadpath: F:\chenwanli\backstage\uploads\

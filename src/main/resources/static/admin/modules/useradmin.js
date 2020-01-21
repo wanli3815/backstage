@@ -16,9 +16,6 @@ layui.define(["table", "form","authtree"],
             },
             cols: [
                 [{
-                    type: "checkbox",
-                    fixed: "left"
-                }, {
                     field: "username",
                     title: "登录名",
                     align: "center"
@@ -165,10 +162,7 @@ layui.define(["table", "form","authtree"],
                 statusCode: 1 //数据状态一切正常的状态码
             },
             cols: [
-                [{
-                    type: "checkbox",
-                    fixed: "left"
-                }, {
+                [ {
                     field: "id",
                     width: 200,
                     title: "ID",
@@ -198,13 +192,19 @@ layui.define(["table", "form","authtree"],
         }),
         i.on("tool(app-admin-user-role)",
             function(e) {
+                var loadindex=layer.msg('处理中...', {
+                    icon: 16
+                    ,shade: 0.01,
+                    time:0
+                });
                 var d = e.data;
                 if ("del" === e.event) layer.confirm("确定删除此角色？",
                     function(d) {
                         t.ajax({
-                            url: 'groupDel?id='+ e.data.id,
-                            method:'POST',
+                            url: 'del/'+ e.data.id,
+                            method:'Delete',
                             success:function (res) {
+                                layer.close(loadindex);
                                 if (res.code == 1){
                                     e.del()
                                 }
