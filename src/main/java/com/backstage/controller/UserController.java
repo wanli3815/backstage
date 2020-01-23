@@ -9,6 +9,7 @@ import com.backstage.service.SysRoleService;
 import com.backstage.service.SysUserRoleService;
 import com.backstage.service.SysUserService;
 import com.backstage.unils.AjaxResult;
+import com.backstage.unils.PasswordUtils;
 import com.backstage.unils.StringUtils;
 import com.backstage.unils.page.TableDataInfo;
 import com.backstage.vo.user.UserAdd;
@@ -16,6 +17,7 @@ import com.backstage.vo.user.UserEdit;
 import com.backstage.vo.user.UserRoleEdit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
+
+import static org.apache.shiro.util.ThreadContext.getSubject;
 
 /**
  * @description: 用户列表
@@ -58,7 +62,6 @@ public class UserController extends BaseController {
     /**
      * 管理员列表数据
      * */
-    @Log(title = "用户管理",busionesstype = BusinessType.LIST)
     @RequiresPermissions("system:user:list")
     @GetMapping("/userList")
     @ResponseBody
@@ -124,11 +127,12 @@ public class UserController extends BaseController {
 
         return AjaxResult.error("修改失败");
     }
-    @Log(title = "用户管理",busionesstype = BusinessType.DELETE)
+
     @RequiresPermissions("system:user:del")
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("/del")
     @ResponseBody
-    public  AjaxResult delUser(@PathVariable("id") String id){
+    @Log(title = "用户管理",busionesstype = BusinessType.DELETE)
+    public  AjaxResult delUser(@RequestParam("id") String id){
         if (StringUtils.isEmpty(id)) {
             return AjaxResult.error("信息不完整");
         }
@@ -165,6 +169,41 @@ public class UserController extends BaseController {
             return AjaxResult.success("编辑成功");
         }
         return  AjaxResult.error("编辑失败");
+    }
+
+    @GetMapping("/changepwd")
+    public String changepwd(){
+        return prefix+"/changepwd";
+    }
+    @PostMapping("/changepwd")
+    @ResponseBody
+    public AjaxResult changepwd(@RequestParam("oldpwd")String oldpwd,@RequestParam("newpwd")String newpwd){
+        SysUser user=new SysUser();
+        Object obj = getSubject().getPrincipal();
+        if (StringUtils.isNotNull(obj))
+        {
+            BeanUtils.copyProperties(obj, user);
+            //检查原密码是否一致
+            String salt = user.getSalt();
+            String password = user.getPassword();
+            boolean matches = PasswordUtils.matches(salt, oldpwd, password);
+            if(!matches){
+                return  AjaxResult.error("原密码输入不正确");
+            }
+            user.setPassword(PasswordUtils.encode(newpwd,salt));
+            int i = sysUserService.changePwd(user);
+            if(i>0){
+                return  AjaxResult.success("修改成功");
+            }
+
+        }
+        return  AjaxResult.error("修改失败");
+    }
+    @PostMapping("/logout")
+    @ResponseBody
+    public AjaxResult logout(){
+        getSubject().logout();
+        return AjaxResult.success("退出成功");
     }
 
 }

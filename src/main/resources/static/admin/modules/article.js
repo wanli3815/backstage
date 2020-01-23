@@ -68,6 +68,11 @@ layui.define(["table", "form"],
                 var e = t.data;
                 "del" === t.event ? layer.confirm("确定删除此文章？",
                     function(d) {
+                        var loadindex=layer.msg('处理中...', {
+                            icon: 16
+                            ,shade: 0.01,
+                            time:0
+                        });
                         q.ajax({
                             url: 'del',
                             data:{
@@ -80,7 +85,7 @@ layui.define(["table", "form"],
                                     t.del()
                                 }
                                 layer.msg(res.msg, {icon: res.code == 1 ? 1: 2,time: 1500});
-                                layer.close(d); //关闭弹层
+                                layer.closeAll(); //关闭弹层
                             }
                         });
                     }) : "edit" === t.event && layer.open({

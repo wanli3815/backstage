@@ -37,7 +37,6 @@ public class NoticeController extends BaseController {
         return prefix + "/index";
     }
 
-    @Log(title = "通知管理",busionesstype = BusinessType.LIST)
     @RequiresPermissions("news:notice:list")
     @GetMapping("/getList")
     @ResponseBody
@@ -90,11 +89,12 @@ public class NoticeController extends BaseController {
         }
         return AjaxResult.error("失败");
     }
-    @Log(title = "通知管理",busionesstype = BusinessType.DELETE)
+
     @RequiresPermissions("news:notice:del")
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("/del")
     @ResponseBody
-    public AjaxResult del(@PathVariable("id") String id){
+    @Log(title = "通知管理",busionesstype = BusinessType.DELETE)
+    public AjaxResult del(@RequestParam(name = "id") String id){
         int delete = noticeService.delete(id);
         if(delete>0){
             return AjaxResult.success("删除成功");

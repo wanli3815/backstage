@@ -49,7 +49,7 @@ public class MainController {
     @GetMapping("/getmenu")
     @ResponseBody
     public AjaxResult getmenu(){
-        SysUser user=null;
+        SysUser user=new SysUser();
         Object obj = getSubject().getPrincipal();
         if (StringUtils.isNotNull(obj))
         {

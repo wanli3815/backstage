@@ -137,9 +137,10 @@
     }).use('index');
 
 
-    layui.use(['jquery','element'], function(){
+    layui.use(['jquery','element','layer'], function(){
         var $ = layui.jquery;
         var element = layui.element;
+        var layer=layui.layer;
         $(function () {
 
             //递归获取导航栏无线层级
@@ -158,6 +159,11 @@
                 ulHtml += "</dl>"
                 return ulHtml;
             };
+            var loadindex=layer.msg('处理中...', {
+                icon: 16
+                ,shade: 0.01,
+                time:0
+            });
             $.ajax({
                 url:"getmenu",
                 success:function(res){
@@ -195,9 +201,11 @@
                         ulHtml += '';
                         $(".layui-nav-tree").append(ulHtml);
                         element.init();  //初始化页面元素
+                        layer.close(loadindex);
 
                     }else{
                         $(".layui-nav-tree").empty();
+                        layer.close(loadindex);
                     }
                 }
             });

@@ -46,7 +46,8 @@ public class CustomRealm extends AuthorizingRealm {
         }
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 
-        if(user.getId().equals("fcf34b56-a7a2-4719-9236-867495e74c31")){
+        String adminIds="fcf34b56-a7a2-4719-9236-867495e74c31";
+        if(user.getId().equals(adminIds)){
             info.addRole("admin");
             info.addStringPermission("*:*:*");
         }else{

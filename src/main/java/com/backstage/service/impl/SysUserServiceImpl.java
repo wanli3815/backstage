@@ -34,16 +34,16 @@ public class SysUserServiceImpl implements SysUserService {
     @Autowired
     private SysUserRoleService sysUserRoleService;
     @Override
-    public SysUser login(String UserName, String PassWord) {
+    public SysUser login(String userName, String passWord) {
         SysUser user=new SysUser();
-        user.setUsername(UserName);
+        user.setUsername(userName);
         SysUser userinfo= sysUserMapper.selectOne(user);
         if(userinfo==null){
             //用户名不存在
             throw new UserNotExistsException();
         }
         //如果密码不一致则提示密码错误
-        if (!PasswordUtils.matches(userinfo.getSalt(),PassWord,userinfo.getPassword())) {
+        if (!PasswordUtils.matches(userinfo.getSalt(),passWord,userinfo.getPassword())) {
 
         }
         return userinfo;
@@ -86,9 +86,9 @@ public class SysUserServiceImpl implements SysUserService {
      * @return
      */
     @Override
-    public int userExist(String UserName) {
+    public int userExist(String userName) {
         SysUser user = new SysUser();
-        user.setUsername(UserName);
+        user.setUsername(userName);
         return  sysUserMapper.selectCount(user);
     }
 
@@ -123,7 +123,15 @@ public class SysUserServiceImpl implements SysUserService {
         return i;
     }
 
-    @Transactional
+    @Override
+    public int changePwd(SysUser user) {
+        Date date=new Date();
+        user.setUpdateTime(date);
+        int i = sysUserMapper.updateByPrimaryKeySelective(user);
+        return i;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean delUser(String id) {
         SysUser newuser=new SysUser();

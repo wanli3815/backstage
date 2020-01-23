@@ -13,7 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>backstage</name>
     <description>后台框架</description>
-
+    <packaging>war</packaging>
     <properties>
         <java.version>1.8</java.version>
     </properties>

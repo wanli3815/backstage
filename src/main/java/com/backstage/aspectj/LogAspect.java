@@ -6,10 +6,7 @@ import com.backstage.dao.SysLogMapper;
 import com.backstage.entity.SysLog;
 import com.backstage.entity.SysUser;
 import com.backstage.service.SysLogService;
-import com.backstage.unils.AddressUtils;
-import com.backstage.unils.IdWorker;
-import com.backstage.unils.ServletUtils;
-import com.backstage.unils.StringUtils;
+import com.backstage.unils.*;
 import com.backstage.unils.text.Convert;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.PrincipalCollection;
@@ -105,7 +102,8 @@ public class LogAspect {
             sysLog.setBusinessType(controllerLog.busionesstype().ordinal());
             sysLog.setCreateTime(new Date());
 
-            String ip = SecurityUtils.getSubject().getSession().getHost();
+            String ipAddr = IpUtils.getIpAddr(ServletUtils.getRequest());
+            String ip = ipAddr;
             sysLog.setIp(ip);
             sysLog.setId(Convert.toStr(new IdWorker().nextId()));
             sysLog.setUrl(ServletUtils.getRequest().getRequestURI());

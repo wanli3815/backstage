@@ -54,7 +54,7 @@ public class RoleController  extends  BaseController{
         return prefix+"/index";
     }
 
-    @Log(title = "角色管理",busionesstype = BusinessType.LIST)
+
     @RequiresPermissions("system:role:list")
     @GetMapping("/roleList")
     @ResponseBody
@@ -141,9 +141,9 @@ public class RoleController  extends  BaseController{
 
     @Log(title = "角色管理",busionesstype = BusinessType.DELETE)
     @RequiresPermissions("system:role:del")
-    @DeleteMapping("del/{id}")
+    @DeleteMapping("/del")
     @ResponseBody
-    public AjaxResult del(@PathVariable("id") String roleId){
+    public AjaxResult del(@RequestParam("id") String roleId){
         boolean countByUser = sysUserRoleService.isUserCountByRole(roleId);
         if(countByUser){
             return AjaxResult.error("请先删除该角色下的用户");

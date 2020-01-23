@@ -43,7 +43,6 @@ public class PermissionController extends BaseController {
         return prefix+"/index";
     }
 
-    @Log(title = "权限管理",busionesstype = BusinessType.LIST)
     @RequiresPermissions("system:permission:list")
     @GetMapping("/getList")
     @ResponseBody
@@ -156,9 +155,9 @@ public class PermissionController extends BaseController {
     }
     @Log(title = "权限管理",busionesstype = BusinessType.DELETE)
     @RequiresPermissions("system:permission:del")
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("/del")
     @ResponseBody
-    public AjaxResult delete(@PathVariable("id") String id){
+    public AjaxResult delete(@RequestParam("id") String id){
         boolean isfindsub=sysPermissionService.isFindSub(id);
         if(isfindsub){
             return AjaxResult.error("请先删除其下方的菜单");

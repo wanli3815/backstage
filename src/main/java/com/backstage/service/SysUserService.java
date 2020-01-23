@@ -13,17 +13,19 @@ import java.util.List;
  **/
 public interface SysUserService {
 
-   SysUser login(String UserName,String PassWord);
+   SysUser login(String userName,String passWord);
 
    List<SysUser> findList(SysUser user);
 
    int insert(UserAdd user);
 
-   int userExist(String UserName);
+   int userExist(String userName);
 
    SysUser userInfo(String userId);
 
    int update(UserEdit userEdit);
+
+   int changePwd(SysUser user);
 
    boolean delUser(String id);
 }
